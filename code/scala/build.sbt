@@ -18,9 +18,9 @@ unmanagedSourceDirectories in Test := Seq((scalaSource in Test).value)
 
 // ### DEPENDENCIES ### //
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.2" % "test"
+libraryDependencies += "org.specs2" %% "specs2" % "2.4.2" % "test"
 
-
+libraryDependencies += "org.apache.commons" % "commons-io" % "2.4" % "test"
 // ### RESOLVERS ### //
 
 resolvers := Seq(ElementNexus)
@@ -41,7 +41,7 @@ publishArtifact in (Compile, packageDoc) := false
 
 // ### COMPILE SETTINGS ### //
 
-crossScalaVersions := Seq("2.11.2")
+crossScalaVersions := Seq("2.11.4")
 
 scalaVersion := crossScalaVersions.value.head
 
