@@ -18,9 +18,10 @@ unmanagedSourceDirectories in Test := Seq((scalaSource in Test).value)
 
 // ### DEPENDENCIES ### //
 
-libraryDependencies += "org.specs2" %% "specs2" % "2.4.2" % "test"
-
-libraryDependencies += "org.apache.commons" % "commons-io" % "2.4" % "test"
+libraryDependencies ++= Seq(
+  "org.specs2" %% "specs2" % "2.4.2" % "test"
+, "commons-io" % "commons-io" % "2.4" % "test"
+)
 // ### RESOLVERS ### //
 
 resolvers := Seq(ElementNexus)
@@ -58,7 +59,7 @@ scalacOptions := Seq(
 , "-Xcheckinit"
 , "-Xlint"
 , "-Xmax-classfile-name", "72"
-// , "-Xno-forwarders"
+, "-Xno-forwarders"
 , "-Xverify"
 , "-Yclosure-elim"
 , "-Yconst-opt"
