@@ -9,9 +9,12 @@ class PrivatizationSpec extends Specification {
 
   def is = s2"""
   Privatization should default access to your classes
-    If your class is public           $ifPublic
-    If your class is package          $ifPackage
-    If your class is package private  $ifPackagePrivate
+    Package private class will stay the same                      $packagePrivateWillNotChange
+    Public class change access to package private                 $publicWillChange
+    Inner Private class will stay the same                        $innerPrivateWillNotChange
+    Inner Package private class will stay the same                $packagePackagePrivateWillNotChange
+    Inner Protected change access to package private              $innerProtectedWillNotChange
+    Inner Public change access to package private                 $innerPublicWillChange
   """
 
   private def getResource(ba: String) = {
@@ -29,21 +32,51 @@ class PrivatizationSpec extends Specification {
     javapResult must not contain "public class"
   }
 
-  def ifPublic = {
-    val className: String = "/test/TestClassPublic"
-    val testClass = getResource(className)
-    (Privatization.apply(testClass) must beTrue) & testJavap(testClass, className)
+  def packagePrivateWillNotChange = {
+    val className: String = "/classes/PackagePrivateClass.clazz"
+    val originalClass = getResource(className)
+    val testClass = originalClass.clone()
+    (Privatization.apply(testClass) must beFalse) & (originalClass === testClass)
   }
 
-  def ifPackage = {
-    val className: String = "/test/TestClassPackage"
-    val testClass = getResource(className)
-    (Privatization.apply(testClass) must beTrue) & testJavap(testClass, className)
+  def publicWillChange = {
+    val className: String = "/classes/PublicClass.clazz"
+    val originalClass = getResource(className)
+    val testClass = originalClass.clone()
+
+    (Privatization.apply(testClass) must beTrue) & (originalClass !== testClass) & testJavap(testClass, className)
   }
 
-  def ifPackagePrivate = {
-    val className: String = "/test/TestClass"
-    val testClass = getResource(className)
-    (!Privatization.apply(testClass) must beTrue) & testJavap(testClass, className)
+  def innerPrivateWillNotChange = {
+    val className: String = "/classes/PublicClass$InnerPrivateClass.clazz"
+    val originalClass = getResource(className)
+    val testClass = originalClass.clone()
+
+    (Privatization.apply(testClass) must beFalse) & (originalClass === testClass)
   }
+
+  def packagePackagePrivateWillNotChange = {
+    val className: String = "/classes/PublicClass$InnerPackagePrivateClass.clazz"
+    val originalClass = getResource(className)
+    val testClass = originalClass.clone()
+
+    (Privatization.apply(testClass) must beFalse) & (originalClass === testClass)
+  }
+
+  def innerProtectedWillNotChange = {
+    val className: String = "/classes/PublicClass$InnerProtectedClass.clazz"
+    val originalClass = getResource(className)
+    val testClass = originalClass.clone()
+
+    (Privatization.apply(testClass) must beTrue) & (originalClass !== testClass) & testJavap(testClass, className)
+  }
+
+  def innerPublicWillChange = {
+    val className: String = "/classes/PublicClass$InnerPublicClass.clazz"
+    val originalClass = getResource(className)
+    val testClass = originalClass.clone()
+
+    (Privatization.apply(testClass) must beTrue) & (originalClass !== testClass) & testJavap(testClass, className)
+  }
+
 }
