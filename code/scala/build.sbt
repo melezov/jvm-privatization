@@ -1,50 +1,41 @@
-val ElementNexus     = "Element Nexus"     at "http://repo.element.hr/nexus/content/groups/public/"
-val ElementReleases  = "Element Releases"  at "http://repo.element.hr/nexus/content/repositories/releases/"
-val ElementSnapshots = "Element Snapshots" at "http://repo.element.hr/nexus/content/repositories/snapshots/"
-
-
 // ### BASIC SETTINGS ### //
 
-organization := "io.jvm"
+organization          := "io.jvm"
 
-name := "jvm-privatization"
+name                  := "jvm-privatization"
 
-version := "0.0.1"
+version               := "0.0.1"
 
-unmanagedSourceDirectories in Compile := Seq((scalaSource in Compile).value)
+crossScalaVersions    := Seq("2.11.4")
 
-unmanagedSourceDirectories in Test := Seq((scalaSource in Test).value)
+scalaVersion          := crossScalaVersions.value.head
 
+organization          := "io.jvm"
+
+publishTo             := Some(if (version.value endsWith "-SNAPSHOT") Opts.resolver.sonatypeSnapshots else Opts.resolver.sonatypeStaging)
+
+licenses              += ("BSD-style", url("http://opensource.org/licenses/BSD-3-Clause"))
+
+startYear             := Some(2014)
+
+scmInfo               := Some(ScmInfo(url("https://github.com/melezov/jvm-privatization"), "scm:git:https://github.com/melezov/jvm-privatization.git"))
+
+pomExtra              ~= (_ ++ {Developers.toXml})
+
+publishMavenStyle     := true
+
+pomIncludeRepository  := { _ => false }
+
+homepage              := Some(url("http://jvm.io"))
 
 // ### DEPENDENCIES ### //
 
-libraryDependencies ++= Seq(
-  "org.specs2" %% "specs2" % "2.4.2" % "test"
+libraryDependencies   ++= Seq(
+  "org.specs2" %% "specs2-core" % "2.4.11" % "test"
 , "commons-io" % "commons-io" % "2.4" % "test"
 )
-// ### RESOLVERS ### //
-
-resolvers := Seq(ElementNexus)
-
-externalResolvers := Resolver.withDefaultResolvers(resolvers.value, mavenCentral = false)
-
-publishTo := Some(
-  if (version.value endsWith "-SNAPSHOT") ElementSnapshots else ElementReleases
-)
-
-credentials ++= {
-  val creds = Path.userHome / ".config" / name.value / "nexus.config"
-  if (creds.exists) Some(Credentials(creds)) else None
-}.toSeq
-
-publishArtifact in (Compile, packageDoc) := false
-
 
 // ### COMPILE SETTINGS ### //
-
-crossScalaVersions := Seq("2.11.4")
-
-scalaVersion := crossScalaVersions.value.head
 
 scalacOptions := Seq(
   "-deprecation"
